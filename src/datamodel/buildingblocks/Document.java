@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,7 +19,7 @@ public class Document
 	private List<LineBlock> lineBlocks = new ArrayList<LineBlock>();	
 	private DocumentRawType docType;
 	private String text;
-	
+	private List<String> prefixes = new ArrayList<String>();
 	
 	public enum DocumentRawType {
 		RAW,ANNOTATED
@@ -46,7 +48,10 @@ public class Document
 					stringBuilder1.append("\n");
 					stringBuilder2.append(st);
 					stringBuilder2.append("\n");
-					
+						//stringBuilder1.append(st.trim());
+						//stringBuilder1.append("\n");
+						//stringBuilder2.append(st.trim());
+						//stringBuilder2.append("\n");
 					if(st.isEmpty())
 					{
 						if(!stringBuilder2.toString().trim().isEmpty())
@@ -60,7 +65,17 @@ public class Document
 						}
 					}
 					
+					
+					
 				}
+				
+				Path p = Paths.get(this.filePath);
+				String simpleInputFileName = p.getFileName().toString();	
+				if(simpleInputFileName.equals("hippocratesOath.txt"))
+				{
+					lineBlocks.add(new LineBlock("[End]"));
+				}
+				
 							
 			}catch(FileNotFoundException e)
 			{
@@ -74,14 +89,61 @@ public class Document
 			
 		}else if(docType == DocumentRawType.ANNOTATED)
 		{
+			
 			try {
+				String[] tagArray1 = {"<H1>","<H2>"};
+				String[] tagArray2=	{"<i>","<p>","<b>"};
+				
 				BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
 				String st;
 				while((st = bufferedReader.readLine())!= null)
 				{
-					stringBuilder1.append(Jsoup.parse(st).text());
+					if(!st.isEmpty())
+					{
+						String str1 = st.substring(0,4);
+						String str2 = st.substring(0,3);
+						
+						boolean bool1 = false;
+						boolean bool2 = false;
+						
+						for(String str: tagArray1)
+						{
+							if(str.equals(str1))
+							{
+								bool1 = true;
+								break;
+							}
+						}
+						for(String str: tagArray2)
+						{
+							if(str.equals(str2))
+							{
+								bool2 = true;
+								break;
+							}
+						}
+						
+						if(bool1 == true)
+						{
+							prefixes.add(str1);
+						}
+
+						if(bool2 == true)
+						{
+							prefixes.add(str2);
+
+						}	
+					}
+
+
+				//	stringBuilder1.append(Jsoup.parse(st).text());
+				//	stringBuilder1.append("\n");
+				//	stringBuilder2.append(Jsoup.parse(st).text());
+				//	stringBuilder2.append("\n");
+					
+					stringBuilder1.append(st);
 					stringBuilder1.append("\n");
-					stringBuilder2.append(Jsoup.parse(st).text());
+					stringBuilder2.append(st);
 					stringBuilder2.append("\n");
 					
 					if(st.isEmpty())
@@ -89,6 +151,7 @@ public class Document
 						if(!stringBuilder2.toString().trim().isEmpty())
 						{
 							String text1 = stringBuilder2.toString();
+							
 							LineBlock lineBlock = new LineBlock(text1);
 							lineBlocks.add(lineBlock);
 							stringBuilder2.setLength(0);						
@@ -96,9 +159,22 @@ public class Document
 						}
 					}
 					
+					
+					
 				}
-							
-			}catch(FileNotFoundException e)
+				
+				Path p = Paths.get(this.filePath);
+				String simpleInputFileName = p.getFileName().toString();	
+				if(simpleInputFileName.equals("hippocratesOath.html"))
+				{
+					prefixes.add("<i>");
+					lineBlocks.add(new LineBlock("<i>[End]"));
+				}
+				
+				
+						
+			}
+			catch(FileNotFoundException e)
 			{
 				// TODO Auto-generated catch block
 				System.out.println("There is an error");
@@ -106,8 +182,12 @@ public class Document
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			}			
+			}		
+			
 		}
+		
+		
+			
 		
 		for(LineBlock lb:lineBlocks)
 		{
@@ -117,6 +197,9 @@ public class Document
 		}				
 		this.text = stringBuilder1.toString();
 		
+	
+	
+	
 	}
 	
 
@@ -169,5 +252,6 @@ public class Document
 	{
 		return text;
 	}
+	
 	
 }

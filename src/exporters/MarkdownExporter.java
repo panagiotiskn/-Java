@@ -10,6 +10,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.itextpdf.text.Chunk;
+import com.itextpdf.text.Paragraph;
+
 import datamodel.buildingblocks.Document;
 import datamodel.buildingblocks.FormatEnum;
 import datamodel.buildingblocks.LineBlock;
@@ -41,10 +44,11 @@ public class MarkdownExporter{
 				 StringBuilder sb2 = new StringBuilder();
 				 StringBuilder sb3 = new StringBuilder();
 				 StringBuilder sb4 = new StringBuilder();
-				 
+				 	 
+				
 				 for(LineBlock l: lineblocks)
 				 {
-					 count ++;
+					 
 					if(l.getStyle()==StyleEnum.OMITTED)
 					{
 						fw.write("\n\n");
@@ -55,23 +59,28 @@ public class MarkdownExporter{
 						sb1.append("\n\n");
 						fw.write(sb1.toString());
 						sb1.setLength(0);
+						count ++;
 					}else if(l.getStyle()== StyleEnum.H2)
 					{
 						fw.write("##"+l.getText().trim());
 						fw.write("\n\n");
-						
-					}else {
+						count ++;
+					}
+					else {
 						if(l.getFormat()==FormatEnum.BOLD)
 						{
 							fw.write("**"+l.getText().trim()+"**");
 							fw.write("\n\n");
+							count ++;
 						}else if(l.getFormat()==FormatEnum.ITALICS)
 						{
 							fw.write("*"+l.getText().trim()+"*");
 							fw.write("\n\n");
+							count ++;
 						}else {
 							fw.write(l.getText());
 							fw.write("\n\n");
+							count ++;
 						}
 					}
 				 }    

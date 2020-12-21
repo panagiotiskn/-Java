@@ -1,6 +1,7 @@
 package datamodel.rules;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import datamodel.buildingblocks.LineBlock;
@@ -14,11 +15,21 @@ public class RuleInPosition extends AbstractRule {
 	public RuleInPosition(List<LineBlock> pLineblocks, List<Integer> pPositions) {
 		// TODO Auto-generated constructor stub
 		this.positions=pPositions;
-		for(Integer number: pPositions)
+		
+		Integer maxNumber = Collections.max(pPositions);
+		
+		if(pLineblocks.size()> maxNumber)
 		{
-			LineBlock lb =pLineblocks.get(number);
-			lineblocks.add(lb);
+			for(Integer number: pPositions)
+			{
+				
+					LineBlock lb = pLineblocks.get(number);
+					lineblocks.add(lb);
+
+				
+			}
 		}
+
 		
 	}
 

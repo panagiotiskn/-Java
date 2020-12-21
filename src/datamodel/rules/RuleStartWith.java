@@ -18,8 +18,8 @@ public class RuleStartWith extends AbstractRule {
 		
 		for (int i=0; i < prefix.length(); i++)
 		{
-			
-			if(prefix.charAt(i) == paragraph.getText().charAt(i))
+			String text = paragraph.getText().trim();
+			if(prefix.charAt(i) == text.charAt(i))
 			{
 				br = 1;
 			}else {

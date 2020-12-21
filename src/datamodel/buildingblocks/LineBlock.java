@@ -61,11 +61,6 @@ public class LineBlock
 		return text;
 	}
 
-	
-	public void setStyle(StyleEnum determineHeadingStatus) {
-		// TODO Auto-generated method stub
-		this.style = determineHeadingStatus;
-	}
 
 	public StyleEnum getStyle()
 	{
@@ -82,6 +77,10 @@ public class LineBlock
 		this.format = determineFormatStatus;
 	}
 	
+	public void setStyle(StyleEnum determineHeadingStatus) {
+		// TODO Auto-generated method stub
+		this.style = determineHeadingStatus;
+	}
 	
 	
 	

@@ -10,6 +10,8 @@ import java.util.List;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import datamodel.ruleset.RuleSet;
+
 import org.apache.commons.io.FileUtils;
 
 import engine.Engine;
@@ -105,8 +107,133 @@ public class TestEngine {
 		return referenceResult;	
 	}
 	
+	@Test (expected = Exception.class)
+	public final void testTemplateRule()
+	{
+		Engine engine1 = null;
+		String str1 = "OMIT";
+		String str2 = "POSITIONS";
+		String str3 = "0,3";
+		List<String> rule = new ArrayList<String>();
+		List<List<String>> rules = new ArrayList<List<String>>();
+		rule.add(str1);
+		rule.add(str2);
+		rule.add(str3);
+		rules.add(rule);
+		
+		engine1.registerInputRuleSetForPlainFiles(rules);
+		int number =engine1.loadFileAndCharacterizeBlocks();
+		assertEquals("java.lang.NullPointerException",number);
+		
+	}
+	@Test
+	public final void happyDayForWritingRule()
+	{
+		String str1 = "OMIT";
+		String str2 = "POSITIONS";
+		String str3 = "0,3";
+		List<String> rule = new ArrayList<String>();
+		List<List<String>> rules = new ArrayList<List<String>>();
+		rule.add(str1);
+		rule.add(str2);
+		rule.add(str3);
+		rules.add(rule);
+		String inputFileName1 = "Resources/SampleDocs/hippocratesOath.txt";
+		engine = new Engine(inputFileName1, "RAW", "happyhippo");
+		RuleSet ruleset = engine.registerInputRuleSetForPlainFiles(rules);
+		assertNotEquals(0,ruleset.toString().length());
+	}
 	
+	@Test
+	public final void happyDayForLoadingRule()
+	{
+		String str1 = "OMIT";
+		String str2 = "POSITIONS";
+		String str3 = "0,3";
+		List<String> rule = new ArrayList<String>();
+		List<List<String>> rules = new ArrayList<List<String>>();
+		rule.add(str1);
+		rule.add(str2);
+		rule.add(str3);
+		rules.add(rule);
+		String inputFileName1 = "Resources/SampleDocs/hippocratesOath.txt";
+		engine = new Engine(inputFileName1, "RAW", "happyhippo");
+		engine.registerInputRuleSetForPlainFiles(rules);
+		engine.loadFileAndCharacterizeBlocks();
+		int number = engine.loadFileAndCharacterizeBlocks();
+		assertEquals(17,number);
+	}
+	
+	
+	@Test (expected = Exception.class)
+	public final void testLoadRules()
+	{
+		Engine engine1 = null;
+		List<List<String>> rules = null;
+		engine1.registerInputRuleSetForPlainFiles(rules);
+		int number = engine1.loadFileAndCharacterizeBlocks();
+		assertEquals("java.lang.NullPointerException",number);
+		
 
+		
+	}
+	
+	@Test
+	public final void happyPathLoadFile()
+	{
+		String inputFileName1 = "Resources/SampleDocs/hippocratesOath.html";
+		String docType = "ANNOTATED";
+		String name = "oneName";
+		Engine engine1 = new Engine(inputFileName1,docType,name);
+		Engine engine2 = null;
+		assertEquals(engine2,engine1);
+	}
+	
+	@Test 
+	public final void testLoadFile()
+	{
+		String inputFileName = "Resources/SampleDocs/hippocrates.txt";
+		String inputFileName1 = "Resources/SampleDocs/hippocratesOath.txt";
+		Engine engine1 = null;
+		if(inputFileName.equals(inputFileName1))
+			engine1 = new Engine(inputFileName,"RAW","papap");
+		assertEquals(null,engine1);
+		
+	}
+	
+	
+	@Test
+	public final void testHappyDayStatistics()
+	{
+		String inputFileName1 = "Resources/SampleDocs/hippocratesOath.html";
+		String docType = "ANNOTATED";
+		String name = "oneName";
+		Engine engine1 = new Engine(inputFileName1,docType,name);
+		
+		List<String> statistics = engine1.reportWithStats();
+		assertEquals(17+2,statistics.size());
+		
+	}
+	
+	@Test (expected = Exception.class)
+	public final void testTheMakingOfStatistics()
+	{
+		Engine engine1 = null;
+		System.out.println(engine1.reportWithStats());
+		List<String> statistics = engine1.reportWithStats();
+		assertEquals(null,statistics.size());
+		
+	}
+	
+	public final void testIfAnEmptyEngineExportsPdf()
+	{
+		Engine engine1 = null;
+		String outputFileName = "Resources/SampleDocs/hippocrates.pdf";
+		int numberOfParagraphs = engine.exportPdf(outputFileName);
+		assertEquals(0,numberOfParagraphs);
+	}
+	
+	
 	@Test
 	public final void testLoadProcessWriteMarkupHippo() {
 		String inputFileName = "Resources/SampleDocs/hippocratesOath.txt";
@@ -129,7 +256,9 @@ public class TestEngine {
 		Boolean localComparison = compareFiles(outputFile, outputFileRef, "testLoadProcessWriteMarkupHippo()");
 		assertEquals(true, localComparison);
 	}
+		// The above test works with some minor compatibility issues
 
+	
 	@Test
 	public final void testLoadProcessWriteMarkupEconomy() {
 		String inputFileName = "Resources/SampleDocs/economy_mt.txt";
@@ -149,6 +278,7 @@ public class TestEngine {
 		assertEquals(true, localComparison);
 	}
 
+
 	@Test
 	public final void testLoadProcessWritePdfHippo() {
 		String inputFileName = "Resources/SampleDocs/hippocratesOath.txt";
@@ -158,15 +288,16 @@ public class TestEngine {
 		String outputFileName = "Resources//Outputs//hippocratesOath.txt.pdf";
 
 		int outputParagraphs = engine.exportPdf(outputFileName);
-		assertEquals(15,outputParagraphs);
+		//assertEquals(15,outputParagraphs);
 		//does not work: some contents are auto-generated and differ.
 		//to find out, must check by reading par. by par.
-//		File outputFile = new File("Resources//Outputs//hippocratesOath.txt.pdf");
-//		File outputFileRef = new File("Resources//OutputReferences//hippocratesOath.Reference.Setup2.pdf");
-//		Boolean localComparison = compareFiles(outputFile, outputFileRef, "testLoadProcessWritePdfHippo()");
-//		assertEquals(true, localComparison);
+		File outputFile = new File("Resources//Outputs//hippocratesOath.txt.pdf");
+		File outputFileRef = new File("Resources//OutputReferences//hippocratesOath.Reference.Setup2.pdf");
+		Boolean localComparison = compareFiles(outputFile, outputFileRef, "testLoadProcessWritePdfHippo()");
+		assertEquals(true, localComparison);
 	}
-	
+
+
 	@Test
 	public final void testLoadProcessWritePdfEconomy() {
 		String inputFileName = "Resources/SampleDocs/economy_mt.txt";
@@ -183,7 +314,7 @@ public class TestEngine {
 //		assertEquals(true, localComparison);
 	}
 
-	
+
 	
 	@Test
 	public final void testLoadProcessWriteMarkupHTMLHippo() {
@@ -203,6 +334,7 @@ public class TestEngine {
 //		assertEquals(true, localComparison);
 	}
 	
+
 	
 	private Boolean compareFiles(File outputFile, File outputFileRef, String caller) {
 		Boolean localComparison = false;
